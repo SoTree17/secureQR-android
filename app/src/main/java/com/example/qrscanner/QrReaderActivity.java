@@ -10,17 +10,22 @@ import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
 public class QrReaderActivity extends CaptureActivity {
     CaptureManager manager;
+    DecoratedBarcodeView decoratedBarcodeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_reader);
 
-        DecoratedBarcodeView decoratedBarcodeView = findViewById(R.id.QrScanner);
+        init();
 
-        manager = new CaptureManager(this, decoratedBarcodeView);
         manager.initializeFromIntent(getIntent(), savedInstanceState);
         manager.decode();
+    }
+
+    private void init() {
+        decoratedBarcodeView = findViewById(R.id.QrScanner);
+        manager = new CaptureManager(this, decoratedBarcodeView);
     }
 
     @Override
@@ -45,5 +50,10 @@ public class QrReaderActivity extends CaptureActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         manager.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 }
