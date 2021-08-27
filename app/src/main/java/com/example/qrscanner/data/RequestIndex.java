@@ -3,15 +3,15 @@ package com.example.qrscanner.data;
 import com.google.gson.annotations.SerializedName;
 
 // Client가 서버에 요청시 body에 첨부할 데이터
-public class RequestUrl {
+public class RequestIndex {
     @SerializedName("reqURL")
-    String reqURL;
+    Integer reqIndex;
 
-    public RequestUrl(String url) {
-        this.reqURL = url;
+    public RequestIndex(Integer index) {
+        this.reqIndex = index;
     }
 
-    public String getUrl() {
-        return reqURL;
+    public Integer getUrl() {
+        return reqIndex;
     }
 }
