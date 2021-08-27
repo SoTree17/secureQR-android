@@ -9,7 +9,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 
-import com.example.qrscanner.data.RequestUrl;
+import com.example.qrscanner.data.RequestIndex;
 import com.example.qrscanner.data.ResponseUrl;
 import com.example.qrscanner.retrofit.RetrofitAPI;
 import com.google.gson.Gson;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String Base_URL = "http://192.168.219.107:8080/api/";
 
         // Request body에 추가할 데이터
-        RequestUrl reqURL = new RequestUrl("index");
+        RequestIndex reqURL = new RequestIndex(2);
 
         // Retrofit 인스턴스 생성
         Retrofit retrofit = new Retrofit.Builder()
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         String Base_URL = data.second;
 
         // Request body에 추가할 데이터
-        RequestUrl reqURL = new RequestUrl("index");
+        RequestIndex reqIndex = new RequestIndex(data.first);
 
         // Retrofit 인스턴스 생성
         Retrofit retrofit = new Retrofit.Builder()
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         RetrofitAPI api = retrofit.create(RetrofitAPI.class);
 
         // 인터페이스 함수를 호출하여 Call 객체 생성 (이때, body 데이터를 넣어준다.)
-        Call<ResponseUrl> call = api.getUrl(reqURL);
+        Call<ResponseUrl> call = api.getUrl(reqIndex);
 
         // Call 객체를 통해 서버에 요청
         call.enqueue(new Callback<ResponseUrl>() {
