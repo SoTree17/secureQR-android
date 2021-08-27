@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // 테스트를 위해 여기에서 호출했음, 최종 위치는 onActivityResult()로 가야될거 같음.
-        requestPOST();
+        requestPOST_test();
 
         // initialize
         init();
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 서버에 HTTP Request(POST 방식)를 하는 함수
-    private void requestPOST() {
+    private void requestPOST_test() {
         // 요청할 서버의 주소
         String Base_URL = "http://192.168.219.107:8080/api/";
 
@@ -91,7 +91,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void requestPOST(Pair<Integer,String> data) {
+        // 요청할 서버의 주소
+        String Base_URL = data.second;
 
+        // Request body에 추가할 데이터
+        RequestUrl reqURL = new RequestUrl("index");
+
+        // Retrofit 인스턴스 생성
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // 사용자 지정 인터페이스(RetrofitAPI.java)를 Retrofit 라이브러리에 의해 인스턴스로 자동 구현
+        RetrofitAPI api = retrofit.create(RetrofitAPI.class);
+
+        // 인터페이스 함수를 호출하여 Call 객체 생성 (이때, body 데이터를 넣어준다.)
+        Call<ResponseUrl> call = api.getUrl(reqURL);
+
+        // Call 객체를 통해 서버에 요청
+        call.enqueue(new Callback<ResponseUrl>() {
+
+            // 서버에서 응답 성공
+            @Override
+            public void onResponse(Call<ResponseUrl> call, Response<ResponseUrl> response) {
+                Log.e("Response", "onResponse success");
+
+                // Response body에서 데이터 꺼내기
+                ResponseUrl result = response.body();
+                Toast.makeText(getApplicationContext(), result.getUrl(), Toast.LENGTH_SHORT).show();
+            }
+
+            // 서버에서 응답 실패
+            @Override
+            public void onFailure(Call<ResponseUrl> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "onResponse failed", Toast.LENGTH_SHORT).show();
+                Log.e("Response", Log.getStackTraceString(t));
+            }
+        });
+    }
 
     // QR 코드를 인식 후, 데이터 꺼내는 함수
     @Override
@@ -110,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 // Pair 로 json parsing
                 String raw_json_data = result.getContents();
                 Pair<Integer, String> parsed_data = jsonParsing(raw_json_data);
+                requestPOST(parsed_data);
             }
         } else super.onActivityResult(requestCode, resultCode, data);
     }
