@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.qrscanner.data.RequestIndex;
+import com.example.qrscanner.data.RequestDTO;
 import com.example.qrscanner.data.ResponseUrl;
 import com.example.qrscanner.retrofit.RetrofitAPI;
 import com.google.gson.Gson;
@@ -18,6 +20,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,20 +34,26 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    final int RequestCode = 0x0000c0de;
+    Button scanButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // 테스트를 위해 여기에서 호출했음, 최종 위치는 onActivityResult()로 가야될거 같음.
-        requestPOST_test();
+        //requestPOST_test();
 
         // initialize
         init();
+        ButtonListener();
     }
 
     // Zxing 라이브러리 관련 초기 설정
     private void init() {
+        scanButton = findViewById(R.id.scan_button);
+        
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setBeepEnabled(true);
         intentIntegrator.setCaptureActivity(QrReaderActivity.class);
@@ -50,8 +61,15 @@ public class MainActivity extends AppCompatActivity {
         intentIntegrator.initiateScan();
     }
 
+    private void ButtonListener() {
+        scanButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, QrReaderActivity.class);
+            startActivityForResult(intent, RequestCode);
+        });
+    }
+
     // 서버에 HTTP Request(POST 방식)를 하는 함수
-    private void requestPOST_test() {
+    /* private void requestPOST_test() {
         // 요청할 서버의 주소
         String Base_URL = "http://192.168.219.107:8080/api/";
 
@@ -90,13 +108,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Response", Log.getStackTraceString(t));
             }
         });
-    }
-    private void requestPOST(Pair<Integer,String> data) {
-        // 요청할 서버의 주소
-        String Base_URL = data.second;
+    } */
 
-        // Request body에 추가할 데이터
-        RequestIndex reqIndex = new RequestIndex(data.first);
+    private void requestPOST(RequestDTO data) {  // data = Request body에 추가할 데이터
+        // 요청할 서버의 주소
+        String Base_URL = data.getRequestURL();
 
         // Retrofit 인스턴스 생성
         Retrofit retrofit = new Retrofit.Builder()
@@ -108,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         RetrofitAPI api = retrofit.create(RetrofitAPI.class);
 
         // 인터페이스 함수를 호출하여 Call 객체 생성 (이때, body 데이터를 넣어준다.)
-        Call<ResponseUrl> call = api.getUrl(reqIndex);
+        Call<ResponseUrl> call = api.getUrl(data);
 
         // Call 객체를 통해 서버에 요청
         call.enqueue(new Callback<ResponseUrl>() {
@@ -146,18 +162,24 @@ public class MainActivity extends AppCompatActivity {
             // 결과값이 제대로 있으면 Toast 메시지를 통해 출력
             else {
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_SHORT).show();
+
                 // Pair 로 json parsing
-                String raw_json_data = result.getContents();
-                Pair<Integer, String> parsed_data = jsonParsing(raw_json_data);
-                requestPOST(parsed_data);
+                String raw_data = result.getContents();
+
+                // Json 형식일때만, 별도의 데이터 추출 후, Request한다.
+                if (isJSON(raw_data)) {
+                    RequestDTO parsed_data = jsonParsing(raw_data);
+                    requestPOST(parsed_data);
+                }
             }
         } else super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public Pair<Integer,String> jsonParsing(String raw_data) {
+    public RequestDTO jsonParsing(String raw_data) {
         // error handling 위한 변수 초기화
         int index = -1;
         String requestURL = "error handling";
+        String data = "";
 
         // string to json
         JsonObject jsonObject = new JsonParser().parse(raw_data).getAsJsonObject();
@@ -172,9 +194,19 @@ public class MainActivity extends AppCompatActivity {
         else {
             requestURL = jsonObject.get("requestURL").getAsString();
             index = jsonObject.get("index").getAsInt();
+            data = jsonObject.get("data").getAsString();
         }
 
-        return new Pair<>(index, requestURL);
+        return new RequestDTO(requestURL, index, data);
     }
 
+    // String이 JSON인지 확인 (Json Array는 Json 아닌걸로 취급했음)
+    public boolean isJSON(String s) {
+        try {
+            new JSONObject(s);
+        } catch (JSONException e) {
+            return false;
+        }
+        return true;
+    }
 }
