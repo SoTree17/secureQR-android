@@ -169,7 +169,9 @@ public class MainActivity extends AppCompatActivity {
                 // Json 형식일때만, 별도의 데이터 추출 후, Request한다.
                 if (isJSON(raw_data)) {
                     RequestDTO parsed_data = jsonParsing(raw_data);
-                    requestPOST(parsed_data);
+                    if(parsed_data.getC_index() != -1) {
+                        requestPOST(parsed_data);
+                    }
                 }
             }
         } else super.onActivityResult(requestCode, resultCode, data);
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         
         // 입력된 json에서 requestURL 이나 index key가 없는 경우 에러 출력
         if ((!jsonObject.has("requestURL")) ||
-                (!jsonObject.has("index"))) {
+                (!jsonObject.has("c_index"))) {
             Toast.makeText(this, "Your Json is not for Secure QR!", Toast.LENGTH_SHORT).show();
         }
         // requestURL, index 파싱 후 return
