@@ -177,7 +177,9 @@ public class MainActivity extends AppCompatActivity {
 
     public RequestDTO jsonParsing(String raw_data) {
         // error handling 위한 변수 초기화
-        int index = -1;
+        int c_index = -1;
+        int d_index = -1;
+
         String requestURL = "error handling";
         String data = "";
 
@@ -193,11 +195,12 @@ public class MainActivity extends AppCompatActivity {
         // requestURL, index 파싱 후 return
         else {
             requestURL = jsonObject.get("requestURL").getAsString();
-            index = jsonObject.get("index").getAsInt();
+            c_index = jsonObject.get("c_index").getAsInt();
+            d_index = jsonObject.get("d_index").getAsInt();
             data = jsonObject.get("data").getAsString();
         }
 
-        return new RequestDTO(requestURL, index, data);
+        return new RequestDTO(requestURL, c_index, d_index, data);
     }
 
     // String이 JSON인지 확인 (Json Array는 Json 아닌걸로 취급했음)

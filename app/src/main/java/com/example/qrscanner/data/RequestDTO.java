@@ -7,15 +7,19 @@ public class RequestDTO {
     @SerializedName("requestURL")
     String requestURL;
 
-    @SerializedName("index")
-    Integer index;
+    @SerializedName("c_index")
+    Integer c_index;
+
+    @SerializedName("d_index")
+    Integer d_index;
 
     @SerializedName("data")
     String data;
 
-    public RequestDTO(String requestURL, Integer index, String data) {
+    public RequestDTO(String requestURL, Integer c_index, Integer d_index, String data) {
         this.requestURL = requestURL;
-        this.index = index;
+        this.c_index = c_index;
+        this.d_index = d_index;
         this.data = data;
     }
 
@@ -23,9 +27,15 @@ public class RequestDTO {
         return requestURL;
     }
 
-    public Integer getIndex() {
-        return index;
+    public Integer getC_index() {
+        return c_index;
     }
+
+
+    public Integer getD_index() {
+        return d_index;
+    }
+
 
     public String getData() {
         return data;
