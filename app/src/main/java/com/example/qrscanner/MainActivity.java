@@ -2,8 +2,10 @@ package com.example.qrscanner;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -29,7 +31,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -68,48 +69,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 서버에 HTTP Request(POST 방식)를 하는 함수
-    /* private void requestPOST_test() {
-        // 요청할 서버의 주소
-        String Base_URL = "http://192.168.219.107:8080/api/";
-
-        // Request body에 추가할 데이터
-        RequestIndex reqURL = new RequestIndex(2);
-
-        // Retrofit 인스턴스 생성
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Base_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // 사용자 지정 인터페이스(RetrofitAPI.java)를 Retrofit 라이브러리에 의해 인스턴스로 자동 구현
-        RetrofitAPI api = retrofit.create(RetrofitAPI.class);
-
-        // 인터페이스 함수를 호출하여 Call 객체 생성 (이때, body 데이터를 넣어준다.)
-        Call<ResponseUrl> call = api.getUrl(reqURL);
-
-        // Call 객체를 통해 서버에 요청
-        call.enqueue(new Callback<ResponseUrl>() {
-
-            // 서버에서 응답 성공
-            @Override
-            public void onResponse(Call<ResponseUrl> call, Response<ResponseUrl> response) {
-                Log.e("Response", "onResponse success");
-
-                // Response body에서 데이터 꺼내기
-                ResponseUrl result = response.body();
-                Toast.makeText(getApplicationContext(), result.getUrl(), Toast.LENGTH_SHORT).show();
-            }
-
-            // 서버에서 응답 실패
-            @Override
-            public void onFailure(Call<ResponseUrl> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "onResponse failed", Toast.LENGTH_SHORT).show();
-                Log.e("Response", Log.getStackTraceString(t));
-            }
-        });
-    } */
-
     private void requestPOST(RequestDTO data) {  // data = Request body에 추가할 데이터
         // 요청할 서버의 주소
         String Base_URL = data.getRequestURL();
@@ -137,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 // Response body에서 데이터 꺼내기
                 ResponseUrl result = response.body();
                 Toast.makeText(getApplicationContext(), result.getUrl(), Toast.LENGTH_SHORT).show();
+                openCustomTab(result.getUrl());
             }
 
             // 서버에서 응답 실패
@@ -172,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
                     if(parsed_data.getC_index() != -1) {
                         requestPOST(parsed_data);
                     }
+                } else {
+                    openCustomTab(raw_data);
                 }
             }
         } else super.onActivityResult(requestCode, resultCode, data);
@@ -213,5 +175,12 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    // 인터넷 창(Chrome Custom Tabs) 띄우기
+    public void openCustomTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 }
