@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,8 +36,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    final int isAuthQR = 1;
+    final int isNotAuthQR = -1;
     final int RequestCode = 0x0000c0de;
     Button scanButton;
+    String path = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize
         init();
+        //hideStatusBar();
         ButtonListener();
     }
 
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         intentIntegrator.setBeepEnabled(true);
         intentIntegrator.setCaptureActivity(QrReaderActivity.class);
         intentIntegrator.setPrompt("Test");
+        intentIntegrator.setBarcodeImageEnabled(true);
         intentIntegrator.initiateScan();
     }
 
@@ -96,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 // Response body에서 데이터 꺼내기
                 ResponseUrl result = response.body();
                 Toast.makeText(getApplicationContext(), result.getUrl(), Toast.LENGTH_SHORT).show();
-                openCustomTab(result.getUrl());
+
+                openResultPage(result.getUrl(), isAuthQR);
             }
 
             // 서버에서 응답 실패
@@ -133,13 +140,13 @@ public class MainActivity extends AppCompatActivity {
                         requestPOST(parsed_data);
                     }
                 } else {
-                    openCustomTab(raw_data);
+                    openResultPage(raw_data, isNotAuthQR);
                 }
             }
         } else super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public RequestDTO jsonParsing(String raw_data) {
+    private RequestDTO jsonParsing(String raw_data) {
         // error handling 위한 변수 초기화
         int c_index = -1;
         int d_index = -1;
@@ -168,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // String이 JSON인지 확인 (Json Array는 Json 아닌걸로 취급했음)
-    public boolean isJSON(String s) {
+    private boolean isJSON(String s) {
         try {
             new JSONObject(s);
         } catch (JSONException e) {
@@ -177,10 +184,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // 인터넷 창(Chrome Custom Tabs) 띄우기
-    public void openCustomTab(String url) {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(this, Uri.parse(url));
+    private void hideStatusBar(){
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        ActionBar actionBar = getActionBar();
+        actionBar.hide();
+    }
+
+    private void openResultPage(String url, int isAuthQR) {
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra("isAuthQR", isAuthQR);
+        intent.putExtra("url", url);
+
+        startActivity(intent);
     }
 }
