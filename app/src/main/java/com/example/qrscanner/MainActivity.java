@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     final int RequestCode = 0x0000c0de;
     final String ErrorMessage = "QR 코드의 데이터가 올바른 형식이 아니거나, 인증 서버 URL이 일치하지 않습니다.";
     Button scanButton;
-    String path = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
