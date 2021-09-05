@@ -36,7 +36,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    //---------- You have to change this URL to your Auth Server URL! ----------------------------
+    // --------------------------- CAUTION! ----------------------------------------------------
+    //---------- You have to change below URL to your Auth Server URL ---------------------------
 
     final String authURL = "http://ec2-3-37-43-9.ap-northeast-2.compute.amazonaws.com:8080/";
 
