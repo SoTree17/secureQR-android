@@ -50,7 +50,7 @@ public class ResultActivity extends AppCompatActivity {
         url = intent.getStringExtra("url");
         int isAuthQR = intent.getIntExtra("isAuthQR", 0);
 
-        if(isAuthQR == IsAuthQR) {
+        if (isAuthQR == IsAuthQR) {
             authMessage.setText("보안 QR 코드 입니다.");
             checkAni.setAnimation(R.raw.check);
             checkAni.loop(false);

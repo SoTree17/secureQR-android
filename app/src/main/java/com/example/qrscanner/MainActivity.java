@@ -36,9 +36,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    final int isAuthQR = 1;
-    final int isNotAuthQR = -1;
+    //---------- You have to change this URL to your Auth Server URL! ----------------------------
+
+    final String authURL = "http://ec2-3-37-43-9.ap-northeast-2.compute.amazonaws.com:8080/";
+
+    //---------------------------------------------------------------------------------------------
+
+    final int IsAuthQR = 1;
+    final int IsNotAuthQR = -1;
+    final int DefaultIndex = -1;
     final int RequestCode = 0x0000c0de;
+    final String ErrorMessage = "QR 코드의 데이터가 올바른 형식이 아니거나, 인증 서버 URL이 일치하지 않습니다.";
     Button scanButton;
     String path = "";
 
@@ -52,14 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize
         init();
-        //hideStatusBar();
         ButtonListener();
     }
 
     // Zxing 라이브러리 관련 초기 설정
     private void init() {
         scanButton = findViewById(R.id.scan_button);
-        
+
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setBeepEnabled(true);
         intentIntegrator.setCaptureActivity(QrReaderActivity.class);
@@ -73,6 +80,39 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, QrReaderActivity.class);
             startActivityForResult(intent, RequestCode);
         });
+    }
+
+    // QR 코드를 인식 후, 데이터 꺼내는 함수
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // QrReaderActivity에서 QR 스캔후, 스캔된 데이터는 intent에 담겨 MainActivity로 넘어온다.
+        // 그래서 intent에서 result 데이터를 꺼낸다.
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null) {
+            // 결과값이 없으면
+            if (result.getContents() == null)
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+                // 결과값이 제대로 있으면 Toast 메시지를 통해 출력
+            else {
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_SHORT).show();
+
+                // Pair 로 json parsing
+                String raw_data = result.getContents();
+
+                // Json 형식일때만, 별도의 데이터 추출 후, Request 한다.
+                if (isJSON(raw_data)) {
+                    RequestDTO parsed_data = jsonParsing(raw_data);
+                    if (parsed_data.getC_index() != DefaultIndex && parsed_data.getRequestURL().equals(authURL)) {
+                        requestPOST(parsed_data);
+                    } else {
+                        openResultPage(ErrorMessage, IsNotAuthQR);
+                    }
+                } else { // Json 형식이 아닐 때
+                    openResultPage(raw_data, IsNotAuthQR);
+                }
+            }
+        } else super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void requestPOST(RequestDTO data) {  // data = Request body에 추가할 데이터
@@ -103,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 ResponseUrl result = response.body();
                 Toast.makeText(getApplicationContext(), result.getUrl(), Toast.LENGTH_SHORT).show();
 
-                openResultPage(result.getUrl(), isAuthQR);
+                openResultPage(result.getUrl(), IsAuthQR);
             }
 
             // 서버에서 응답 실패
@@ -115,49 +155,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // QR 코드를 인식 후, 데이터 꺼내는 함수
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        // QrReaderActivity에서 QR 스캔후, 스캔된 데이터는 intent에 담겨 MainActivity로 넘어온다.
-        // 그래서 intent에서 result 데이터를 꺼낸다.
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-        if (result != null) {
-            // 결과값이 없으면
-            if (result.getContents() == null)
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-            // 결과값이 제대로 있으면 Toast 메시지를 통해 출력
-            else {
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_SHORT).show();
-
-                // Pair 로 json parsing
-                String raw_data = result.getContents();
-
-                // Json 형식일때만, 별도의 데이터 추출 후, Request한다.
-                if (isJSON(raw_data)) {
-                    RequestDTO parsed_data = jsonParsing(raw_data);
-                    if(parsed_data.getC_index() != -1) {
-                        requestPOST(parsed_data);
-                    }
-                } else {
-                    openResultPage(raw_data, isNotAuthQR);
-                }
-            }
-        } else super.onActivityResult(requestCode, resultCode, data);
-    }
-
     private RequestDTO jsonParsing(String raw_data) {
         // error handling 위한 변수 초기화
-        int c_index = -1;
-        int d_index = -1;
+        int c_index = DefaultIndex;
+        int d_index = DefaultIndex;
 
         String requestURL = "error handling";
         String data = "";
 
         // string to json
         JsonObject jsonObject = new JsonParser().parse(raw_data).getAsJsonObject();
-        
-        
+
+
         // 입력된 json에서 requestURL 이나 index key가 없는 경우 에러 출력
         if ((!jsonObject.has("requestURL")) ||
                 (!jsonObject.has("c_index"))) {
@@ -184,22 +193,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void hideStatusBar(){
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-        // Remember that you should never show the action bar if the
-        // status bar is hidden, so hide that too if necessary.
-        ActionBar actionBar = getActionBar();
-        actionBar.hide();
-    }
-
     private void openResultPage(String url, int isAuthQR) {
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("isAuthQR", isAuthQR);
         intent.putExtra("url", url);
-
         startActivity(intent);
     }
 }
