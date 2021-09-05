@@ -1,3 +1,8 @@
+# 앱 사용 방법
+1. Android Studio에 Project Cloning.
+2. authURL을 사용할 인증 서버 주소로 변경.
+3. APK Build
+
 # 현재 앱 구조
 ![현 구조](https://user-images.githubusercontent.com/72081383/130569576-3eab5545-1783-4f36-b700-7e6cfd99b872.png)
 
