@@ -1,11 +1,17 @@
-# 앱 사용 방법
-1. Android Studio에 Project Cloning.
-2. authURL을 사용할 인증 서버 주소로 변경.
-3. APK Build
+# How to use this app
+1. Project cloning to Android Studio.
+2. Change authURL value to your auth server url in MainActivity.
+3. Build APK
 
-# 현재 앱 구조
-![현 구조](https://user-images.githubusercontent.com/72081383/130569576-3eab5545-1783-4f36-b700-7e6cfd99b872.png)
+# App structure
+![앱 구조](https://user-images.githubusercontent.com/72081383/132221987-2260d71c-714e-48ca-ad82-b2ced93c5beb.png)
 
-# 추가 구현 사항 (완료)
-~~onActivityResult() 함수에서 URL과 index 데이터 추출 필요 (일반 QR도 인식하기 위해선, index가 있는 경우 없는 경우로 분기를 나누면 될거 같음)~~
+# Open Source License
+zxing
+https://github.com/zxing/zxing
 
+Retrofit
+https://square.github.io/retrofit/
+
+Lottie
+https://airbnb.io/lottie/#/
