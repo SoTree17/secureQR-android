@@ -16,9 +16,9 @@ This is a secureQR scanner app for android.
 
 ## Copyright
 
-|Component|Version|Homepage|License|File No.|
-|----|------|-----------|------|-------|
-|Retrofit|2.9.0|https://square.github.io/retrofit/|Apache-2.0 License||
-|Zxing|4.2.0|https://github.com/zxing/zxing|Apache-2.0 License||
-|Gson|2.9.0|https://github.com/google/gson|Apache-2.0 License||
-|Lottie|4.1.0|http://airbnb.io/lottie/#/|Apache-2.0 License||
+|Component|Version|Homepage|License|
+|----|------|-----------|------|
+|Retrofit|2.9.0|https://square.github.io/retrofit/|Apache-2.0 License|
+|Zxing|4.2.0|https://github.com/zxing/zxing|Apache-2.0 License|
+|Gson|2.9.0|https://github.com/google/gson|Apache-2.0 License|
+|Lottie|4.1.0|http://airbnb.io/lottie/#/|Apache-2.0 License|
