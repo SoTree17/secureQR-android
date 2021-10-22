@@ -70,12 +70,7 @@ public class MainActivity extends AppCompatActivity {
         //intentIntegrator.initiateScan();
     }
 
-    private void ButtonListener(View v) {
 
-            Intent intent = new Intent(this, QrReaderActivity.class);
-            startActivityForResult(intent, RequestCode);
-
-    }
 
     // QR 코드를 인식 후, 데이터 꺼내는 함수
     @Override
@@ -194,6 +189,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("url", url);
         startActivity(intent);
     }
+
+    public void onButtonClicked(View v) {
+        Intent intent = new Intent(this, QrReaderActivity.class);
+        startActivityForResult(intent, RequestCode);
+    }
+
     // License page
     public void onButton1Clicked(View v) {
         startActivity(new Intent(this, OssLicensesMenuActivity.class));
