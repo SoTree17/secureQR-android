@@ -14,13 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.secureQR.module.SecureQR;
 
 import java.io.File;
 
 public class ResultActivity extends AppCompatActivity {
 
-    final int IsAuthQR = 1;
-    final int IsNotAuthQR = -1;
     String url = "";
 
     TextView urlText;
@@ -50,7 +49,7 @@ public class ResultActivity extends AppCompatActivity {
         url = intent.getStringExtra("url");
         int isAuthQR = intent.getIntExtra("isAuthQR", 0);
 
-        if (isAuthQR == IsAuthQR) {
+        if (isAuthQR == SecureQR.IsAuthQR) {
             authMessage.setText("보안 QR 코드 입니다.");
             checkAni.setAnimation(R.raw.check);
             checkAni.loop(false);
