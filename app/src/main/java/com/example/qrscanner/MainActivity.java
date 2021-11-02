@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize
         init();
-        //ButtonListener();
+        ButtonListener();
     }
 
     // SecureQR 및 Zxing 라이브러리 관련 초기 설정
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         final String pkgName = "com.example.qrscanner";
         final String activityName = "ResultActivity";
 
-        secureQR = new SecureQR(getApplicationContext(), pkgName, activityName, authURL, QR_RequestCode);
+        secureQR = new SecureQR(getApplicationContext(), pkgName, activityName, authURL);
 
         scanButton = findViewById(R.id.scan_button);
 
@@ -67,14 +67,6 @@ public class MainActivity extends AppCompatActivity {
         intentIntegrator.setRequestCode(QR_RequestCode);
         intentIntegrator.setBarcodeImageEnabled(true);
         //intentIntegrator.initiateScan();
-    }
-
-    // QR 스캔 액티비티 실행 
-    private void ButtonListener() {
-        scanButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, QrReaderActivity.class);
-            startActivityForResult(intent, QR_RequestCode);
-        });
     }
 
     // QR 코드를 인식 후, 데이터 꺼내는 함수
@@ -88,7 +80,15 @@ public class MainActivity extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-  
+
+    // QR 스캔 액티비티 실행
+    public void ButtonListener() {
+        scanButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, QrReaderActivity.class);
+            startActivityForResult(intent, QR_RequestCode);
+        });
+    }
+
     // License page
     public void onButton1Clicked(View v) {
         startActivity(new Intent(this, OssLicensesMenuActivity.class));
