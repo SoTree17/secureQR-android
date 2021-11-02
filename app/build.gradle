@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    // plugin 추가
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -54,6 +56,8 @@ dependencies {
     implementation 'com.airbnb.android:lottie:4.1.0'
 
     // SecureQR
-    implementation 'com.github.SoTree17:SecureQR-module-android:0.0.3'
+    implementation 'com.github.SoTree17:SecureQR-module-android:0.0.5'
 
+    // library 추가
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 }

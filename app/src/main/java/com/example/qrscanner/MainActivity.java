@@ -1,24 +1,19 @@
 package com.example.qrscanner;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.browser.customtabs.CustomTabsIntent;
-
-import android.app.ActionBar;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.qrscanner.data.RequestDTO;
 import com.example.qrscanner.data.ResponseUrl;
 import com.example.qrscanner.retrofit.RetrofitAPI;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -53,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize
         init();
-        ButtonListener();
+        //ButtonListener();
     }
 
     // SecureQR 및 Zxing 라이브러리 관련 초기 설정
@@ -71,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
         intentIntegrator.setPrompt("Test");
         intentIntegrator.setRequestCode(QR_RequestCode);
         intentIntegrator.setBarcodeImageEnabled(true);
-        intentIntegrator.initiateScan();
+        //intentIntegrator.initiateScan();
     }
 
+    // QR 스캔 액티비티 실행 
     private void ButtonListener() {
         scanButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, QrReaderActivity.class);
@@ -91,5 +87,10 @@ public class MainActivity extends AppCompatActivity {
         secureQR.processResult(result);
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+  
+    // License page
+    public void onButton1Clicked(View v) {
+        startActivity(new Intent(this, OssLicensesMenuActivity.class));
     }
 }
