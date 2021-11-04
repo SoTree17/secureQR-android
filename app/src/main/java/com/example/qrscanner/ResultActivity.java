@@ -21,6 +21,7 @@ import java.io.File;
 public class ResultActivity extends AppCompatActivity {
 
     final String FAIL_DECRYPT = "복호화실패";
+    final String FAIL_INDEX = "인덱스 오류";
 
     String url = "";
 
@@ -56,6 +57,10 @@ public class ResultActivity extends AppCompatActivity {
             // FAIL CHECKING
             if (url.equals(FAIL_DECRYPT)) {
                 authMessage.setText("보안 QR 코드에 문제가 있습니다.");
+                checkAni.setAnimation(R.raw.alert);
+                checkAni.playAnimation();
+            } else if(url.equals(FAIL_INDEX)) {
+                authMessage.setText("보안 QR 서버에 문제가 있습니다.");
                 checkAni.setAnimation(R.raw.alert);
                 checkAni.playAnimation();
             } else {
