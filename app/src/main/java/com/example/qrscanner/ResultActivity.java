@@ -24,9 +24,11 @@ public class ResultActivity extends AppCompatActivity {
     final String FAIL_INDEX = "인덱스 오류";
 
     String url = "";
+    String scannedData_s = "";
 
     TextView urlText;
     TextView authMessage;
+    TextView scannedData;
     Button connectButton;
     LottieAnimationView checkAni;
 
@@ -43,12 +45,14 @@ public class ResultActivity extends AppCompatActivity {
     private void init() {
         urlText = findViewById(R.id.URL);
         authMessage = findViewById(R.id.AuthMessage);
+        scannedData = findViewById(R.id.scannedData);
         connectButton = findViewById(R.id.connectButton);
         checkAni = findViewById(R.id.checkAnimation);
     }
 
     private void setContents() {
         Intent intent = getIntent();
+        scannedData_s = intent.getStringExtra("scannedData");
         url = intent.getStringExtra("url");
         int isAuthQR = intent.getIntExtra("isAuthQR", 0);
 
@@ -75,6 +79,7 @@ public class ResultActivity extends AppCompatActivity {
         }
 
         urlText.setText(url);
+        scannedData.setText(scannedData_s);
     }
 
     private void buttonListener() {
