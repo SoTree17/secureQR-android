@@ -56,7 +56,7 @@ public class ResultActivity extends AppCompatActivity {
         if (isAuthQR == SecureQR.IsAuthQR) {
 
             // FAIL CHECKING
-            if (url.equals(SecureQR.FAIL_DECRYPT) && url.equals(SecureQR.FAIL_HASH) && url.equals(SecureQR.FAIL_DATA)) {
+            if (url.equals(SecureQR.FAIL_DECRYPT) || url.equals(SecureQR.FAIL_HASH) || url.equals(SecureQR.FAIL_DATA)) {
                 authMessage.setText("보안 QR 코드에 문제가 있습니다.");
                 checkAni.setAnimation(R.raw.alert);
                 checkAni.playAnimation();
