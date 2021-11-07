@@ -56,7 +56,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:4.1.0'
 
     // SecureQR
-    implementation 'com.github.SoTree17:SecureQR-module-android:0.0.6'
+    implementation 'com.github.SoTree17:SecureQR-module-android:0.0.8'
 
     // library 추가
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
